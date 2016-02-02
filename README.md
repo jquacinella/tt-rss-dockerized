@@ -49,57 +49,58 @@ docker network create --driver overlay personal-net
 
 ### PHP5-FPM Container
 
-docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-php5 -t -i -d -p 9000:9000 -v $(pwd):/var/www/html/ php:5-fpm
+* docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-php5 -t -i -d -p 9000:9000 -v $(pwd):/var/www/html/ php:5-fpm
 
-curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
+* curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
 
-docker-php-ext-install mbstring mysqli
+* docker-php-ext-install mbstring mysqli
 
-chmod -R 777 cache/images
-chmod -R 777 cache/upload
-chmod -R 777 cache/export
-chmod -R 777 cache/js
-chmod -R 777 feed-icons
-chmod -R 777 lock
+* chmod -R 777 cache/images
+* chmod -R 777 cache/upload
+* chmod -R 777 cache/export
+* chmod -R 777 cache/js
+* chmod -R 777 feed-icons
+* chmod -R 777 lock
 
 
 ### NGinx
 
-docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name nginx -d -p 8080:80 nginx:latest
+* docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name nginx -d -p 8080:80 nginx:latest
 
-server {
-    listen  80;
+    server {
+        listen  80;
 
-    root /var/www/html/tt-rss
+        root /var/www/html/tt-rss
 
-    error_log /var/log/nginx/localhost.error.log;
-    access_log /var/log/nginx/localhost.access.log;
+        error_log /var/log/nginx/localhost.error.log;
+        access_log /var/log/nginx/localhost.access.log;
 
-    location / {
-        # try to serve file directly, fallback to app.php
-        try_files $uri /index.php
+        location / {
+            # try to serve file directly, fallback to app.php
+            try_files $uri /index.php
+        }
+
+        location ~ ^/.+\.php(/|$) {
+            fastcgi_pass ttrss-php5:9000;
+            fastcgi_split_path_info ^(.+\.php)(/.*)$;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
     }
-
-    location ~ ^/.+\.php(/|$) {
-        fastcgi_pass ttrss-php5:9000;
-        fastcgi_split_path_info ^(.+\.php)(/.*)$;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    }
-}
 
 
 ### MySQL
 
-docker run --net personal-net -e constraint:node==personal-swarm-node1 --name ttrss-mysql -e MYSQL_ROOT_PASSWORD=changeme -e MYSQL_DATABASE=ttrss -e MYSQL_USER=ttrss -e MYSQL_PASSWORD=ttrss -p 3306:3306 -d mysql:5.7
+* docker run --net personal-net -e constraint:node==personal-swarm-node1 --name ttrss-mysql -e MYSQL_ROOT_PASSWORD=changeme -e MYSQL_DATABASE=ttrss -e MYSQL_USER=ttrss -e MYSQL_PASSWORD=ttrss -p 3306:3306 -d mysql:5.7
 
 
 ## TODO
 
-Setup custom registry on aws spot instance backed by s3
-create some images of the mysql, 
-nginx and php containers
+* Setup custom registry on aws spot instance backed by s3
+* create some images of the mysql, nginx and php containers
 
-flocker management
+* flocker management
+* create mysql volume
+* volume with tt-rss installed?
 
-why does consul not show right ip addresses when using overlay network
+* why does consul not show right ip addresses when using overlay network
