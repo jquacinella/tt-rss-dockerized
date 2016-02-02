@@ -31,18 +31,18 @@ Inspiration:
 * eval "$(docker-machine env --swarm personal-swarm-master)"
 * docker run -h personal-mysql -d -e constraint:node==swarm1 nginx
 
-## create network
+## Create Overlay Network
 
 docker network create --driver overlay personal-net
 
-## Registartors
+## Registarators
 
-* docker run --net host -d -e constraint:node==personal-swarm-node1  --name registrator-node1 --volume=/var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:latest consul://$(docker-machine ip consul):8500/
+* docker run --net personal-net -d -e constraint:node==personal-swarm-node1  --name registrator-node1 --volume=/var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:latest consul://$(docker-machine ip consul):8500/
 
-* docker run --net host -d -e constraint:node==personal-swarm-master --name registrator-master --volume=/var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:latest consul://$(docker-machine ip consul):8500/
+* docker run --net personal-net -d -e constraint:node==personal-swarm-master --name registrator-master --volume=/var/run/docker.sock:/tmp/docker.sock gliderlabs/registrator:latest consul://$(docker-machine ip consul):8500/
 
 
-### Use DNS from Consul
+### Example: Use DNS from Consul
 
 * docker run --net personal-net --dns $(docker-machine ip consul) --dns 8.8.8.8 --dns-search service.dc1.consul -t -i --name test --rm   phusion/baseimage /sbin/my_init -- bash -l
 
