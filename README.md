@@ -51,16 +51,16 @@ docker network create --driver overlay personal-net
 
 * docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-php5 -t -i -d -p 9000:9000 -v $(pwd):/var/www/html/ php:5-fpm
 
-* curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
 
-* docker-php-ext-install mbstring mysqli
+docker-php-ext-install mbstring mysqli
 
-* chmod -R 777 cache/images
-* chmod -R 777 cache/upload
-* chmod -R 777 cache/export
-* chmod -R 777 cache/js
-* chmod -R 777 feed-icons
-* chmod -R 777 lock
+chmod -R 777 cache/images
+chmod -R 777 cache/upload
+chmod -R 777 cache/export
+chmod -R 777 cache/js
+chmod -R 777 feed-icons
+chmod -R 777 lock
 
 
 ### NGinx
@@ -89,6 +89,13 @@ docker network create --driver overlay personal-net
     }
 
 
+
+ apt-get update && apt-get install git vim
+ mkdir -p /var/www/html
+ cd /var/www/html
+ git clone https://tt-rss.org/git/tt-rss.git tt-rss
+
+
 ### MySQL
 
 * docker run --net personal-net -e constraint:node==personal-swarm-node1 --name ttrss-mysql -e MYSQL_ROOT_PASSWORD=changeme -e MYSQL_DATABASE=ttrss -e MYSQL_USER=ttrss -e MYSQL_PASSWORD=ttrss -p 3306:3306 -d mysql:5.7
@@ -102,5 +109,14 @@ docker network create --driver overlay personal-net
 * flocker management
 * create mysql volume
 * volume with tt-rss installed?
+
+
+
+
+
+Docker registry IAM user
+AKIAJRWS3U2ZJB5GT6QQ
+W2StiVdhLwIGCsplTtgIOQpXJcrtTlFAVbMNgq7j
+
 
 * why does consul not show right ip addresses when using overlay network
