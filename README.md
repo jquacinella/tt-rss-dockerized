@@ -12,7 +12,7 @@ Inspiration:
 
 # Consul VM
 
-* docker-machine create --driver virtualbox --virtualbox-memory "512"  consul
+* docker-machine create --driver virtualbox --virtualbox-memory "512" --engine-insecure-registry registry.quacinella.org:5000 consul
 * eval $(docker-machine env consul)
 * docker pull progrium/consul
 * docker run -d  --name consul -p 8400:8400 -p 8500:8500 -p 53:53/udp -h consul-node1 progrium/consul -server -bootstrap -ui-dir /ui
@@ -21,9 +21,9 @@ Inspiration:
 
 ## Create VMs for Swarm
 
-* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-master --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376" personal-swarm-master
+* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-master --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376" --engine-insecure-registry registry.quacinella.org:5000 personal-swarm-master
 
-* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376"  personal-swarm-node1 
+* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376"  --engine-insecure-registry registry.quacinella.org:5000 personal-swarm-node1 
 
 
 ## Use Swarm
@@ -111,6 +111,7 @@ chmod -R 777 lock
 * volume with tt-rss installed?
 
 
+#### Registry
 
 
 
