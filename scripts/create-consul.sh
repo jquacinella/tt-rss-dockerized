@@ -1,7 +1,7 @@
 #!/bin/bash
 
 docker-machine create --driver virtualbox --virtualbox-memory "512" \
-  --engine-insecure-registry registry.quacinella.org:5000 \
+  --engine-insecure-registry registry.quacinella.org \
   consul
 
 eval $(docker-machine env consul)
