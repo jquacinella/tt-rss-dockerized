@@ -82,7 +82,9 @@ docker network create --driver overlay personal-net
 
 ## PHP5-FPM Container
 
-* docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-php5 -t -i -d -p 9000:9000 -v $(pwd):/var/www/html/ php:5-fpm
+* docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-php5 -t -i -d -p 9000:9000 php:5-fpm
+
+docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-php5 -t -i -d -p 9000:9000 registry.quacinella.org/ttrss-php5:0.1
 
 ### Dockerfile: TODO
 
@@ -105,7 +107,9 @@ chmod -R 777 lock
 
 ## NGinx
 
-* docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name nginx -d -p 8080:80 nginx:latest
+* docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-nginx -d -p 8080:80 nginx:latest
+
+docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-nginx -d -p 8080:80 registry.quacinella.org/ttrss-nginx:0.1
 
 ### Dockerfile: TODO
 
@@ -142,9 +146,6 @@ chmod -R 777 lock
 
 
 ## TODO
-
-* Setup custom registry on aws spot instance backed by s3
-* create some images of the mysql, nginx and php containers
 
 * flocker management
 * create mysql volume
