@@ -2,7 +2,7 @@
 
 ## Registry
 
-docker-machine create \
+* docker-machine create \
   --driver amazonec2 \
   --amazonec2-access-key $docker_aws_key \
   --amazonec2-secret-key $docker_aws_secret \
@@ -14,9 +14,9 @@ docker-machine create \
   --amazonec2-spot-price 0.04 \
   personal-registry
 
-eval $(docker-machine env personal-registry)
+* eval $(docker-machine env personal-registry)
 
-docker run -d \
+* docker run -d \
   -e SETTINGS_FLAVOR=s3 \
   -e AWS_BUCKET=jq-docker-registry \
   -e STORAGE_PATH=/registry \
@@ -45,7 +45,7 @@ Inspiration:
 
 # Consul VM
 
-* docker-machine create --driver virtualbox --virtualbox-memory "512" --engine-insecure-registry registry.quacinella.org:5000 consul
+* docker-machine create --driver virtualbox --virtualbox-memory "512" --engine-insecure-registry registry.quacinella.org consul
 * eval $(docker-machine env consul)
 * docker pull progrium/consul
 * docker run -d  --name consul -p 8400:8400 -p 8500:8500 -p 53:53/udp -h consul-node1 progrium/consul -server -bootstrap -ui-dir /ui
@@ -54,9 +54,9 @@ Inspiration:
 
 ## Create VMs for Swarm
 
-* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-master --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376" --engine-insecure-registry registry.quacinella.org:5000 personal-swarm-master
+* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-master --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376" --engine-insecure-registry registry.quacinella.org personal-swarm-master
 
-* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376"  --engine-insecure-registry registry.quacinella.org:5000 personal-swarm-node1 
+* docker-machine create --driver virtualbox --virtualbox-memory "512" --swarm --swarm-discovery consul://$(docker-machine ip consul):8500/ --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" --engine-opt="cluster-advertise=eth1:2376"  --engine-insecure-registry registry.quacinella.org personal-swarm-node1 
 
 
 ## Use Swarm
