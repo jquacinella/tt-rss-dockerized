@@ -1,3 +1,36 @@
+# Docker Setup 
+
+## Registry
+
+docker-machine create \
+  --driver amazonec2 \
+  --amazonec2-access-key $docker_aws_key \
+  --amazonec2-secret-key $docker_aws_secret \
+  --amazonec2-vpc-id vpc-81d2a8e5 \
+  --amazonec2-region us-east-1 \
+  --amazonec2-zone d \
+  --amazonec2-instance-type m3.medium \
+  --amazonec2-request-spot-instance  \
+  --amazonec2-spot-price 0.04 \
+  personal-registry
+
+eval $(docker-machine env personal-registry)
+
+docker run -d \
+  -e SETTINGS_FLAVOR=s3 \
+  -e AWS_BUCKET=jq-docker-registry \
+  -e STORAGE_PATH=/registry \
+  -e AWS_KEY=$docker_aws_s3_key \
+  -e AWS_SECRET=$W2StiVdhLwIGCsplTtgIOQpXJcrtTlFAVbMNgq7j \
+  -e STORAGE_REDIRECT=true \
+  -e SEARCH_BACKEND=sqlalchemy \
+  --name registry \
+  -p '80:5000' registry
+
+Allow port 80 on "Docker-Machine" security group, which is created by default is not specified
+
+
+
 # TT-RSS Dockerized
 
 TT-RSS as Docker Setup using Machine, Swarm, Consul and Registrator
@@ -47,9 +80,11 @@ docker network create --driver overlay personal-net
 * docker run --net personal-net --dns $(docker-machine ip consul) --dns 8.8.8.8 --dns-search service.dc1.consul -t -i --name test --rm   phusion/baseimage /sbin/my_init -- bash -l
 
 
-### PHP5-FPM Container
+## PHP5-FPM Container
 
 * docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name ttrss-php5 -t -i -d -p 9000:9000 -v $(pwd):/var/www/html/ php:5-fpm
+
+### Dockerfile: TODO
 
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
 
@@ -62,10 +97,17 @@ chmod -R 777 cache/js
 chmod -R 777 feed-icons
 chmod -R 777 lock
 
+ apt-get update && apt-get install git vim
+ mkdir -p /var/www/html
+ cd /var/www/html
+ git clone https://tt-rss.org/git/tt-rss.git tt-rss
 
-### NGinx
+
+## NGinx
 
 * docker run --net personal-net -e constraint:node==personal-swarm-node1 --dns $(docker-machine ip consul) --dns 8.8.8.8  --name nginx -d -p 8080:80 nginx:latest
+
+### Dockerfile: TODO
 
     server {
         listen  80;
@@ -88,15 +130,13 @@ chmod -R 777 lock
         }
     }
 
-
-
  apt-get update && apt-get install git vim
  mkdir -p /var/www/html
  cd /var/www/html
  git clone https://tt-rss.org/git/tt-rss.git tt-rss
 
 
-### MySQL
+## MySQL
 
 * docker run --net personal-net -e constraint:node==personal-swarm-node1 --name ttrss-mysql -e MYSQL_ROOT_PASSWORD=changeme -e MYSQL_DATABASE=ttrss -e MYSQL_USER=ttrss -e MYSQL_PASSWORD=ttrss -p 3306:3306 -d mysql:5.7
 
@@ -111,13 +151,11 @@ chmod -R 777 lock
 * volume with tt-rss installed?
 
 
-#### Registry
 
 
 
-Docker registry IAM user
-AKIAJRWS3U2ZJB5GT6QQ
-W2StiVdhLwIGCsplTtgIOQpXJcrtTlFAVbMNgq7j
+#### Issues
 
-
-* why does consul not show right ip addresses when using overlay network
+* Why does consul not show right ip addresses when using overlay network
+* answer: http://stackoverflow.com/questions/26424338/docker-daemon-config-file-on-boot2docker
+  have to reconfigure the machines to use new consul server
